@@ -12,8 +12,7 @@
   <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Стили SCSS / CSS -->
-  <style type="text/css">
+  <style>
     @import url("https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@800&display=swap");
 
     * {
@@ -47,6 +46,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
 
     h1 {
@@ -63,9 +63,11 @@
       margin-top: 1rem;
       gap: 1rem;
       width: 100%;
+      position: relative;
+      z-index: 1;
     }
 
-    /* КАСТОМНЫЙ ВЫПАДАЮЩИЙ СПИСОК */
+    /* КАСТОМНЫЙ ВЫПАДАЮЩИЙ СПИСОК - ОТКРЫВАЕТСЯ ВВЕРХ */
     .custom-select {
       position: relative;
       flex-grow: 1;
@@ -84,20 +86,21 @@
       backdrop-filter: blur(4px);
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: background 0.2s;
+      position: relative;
+      z-index: 2;
     }
 
     .select-trigger:hover {
       background: rgba(255, 255, 255, 0.4);
     }
 
-    /* ОКНО МЕНЮ С ОГРАНИЧЕНИЕМ В 10 СМАЙЛОВ И СКРОЛЛОМ */
+    /* ОКНО МЕНЮ - ОТКРЫВАЕТСЯ ВВЕРХ */
     .dropdown-menu {
       position: absolute;
-      top: 110%;
+      bottom: 110%; /* Вместо top: 110% — теперь снизу вверх */
       left: 0;
       right: 0;
-      /* Высота ровно под ~10 смайликов (каждая строка примерно 45px) */
-      max-height: 250px; 
+      max-height: 250px;
       overflow-y: auto;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
@@ -154,6 +157,18 @@
         flex-direction: column;
       }
     }
+
+    @media (max-height: 700px) {
+      .dropdown-menu {
+        max-height: 180px;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .dropdown-menu {
+        max-height: 140px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -168,7 +183,7 @@
       '❤️','🌛','🌜','🔥','💯','💫','⭐','🌟','🕳️','🧡','💛','💚','💙','💜','🤎','🖤','🤍','💘','💝','💖','💗','💓','💞','💕','💌','♥️','❣️','💔','💋','👁️','💐','🌹','🌷','🌼','🌈','🎂','🧁','🎊','🎈','👑','💎','☕','🩷','😘','🥰','😍','🤩','🥳','🤠','🤓','😎','🤡','❤️‍🩹','🫦','🌸','🦄','🐩','🐦','🍬','🎁','🪄','🩶','🩵','🌞','🥲','🤥','😇','🤑','🥸','👻','🎃','💩','🤖','👽','🙈','🦠','💀','🌵','🌲','⛄','🌪️','☁️','🌍','🐵','🦁','🐱','🐨','🐼','🐭','🐰','🐷','🐢','🦌','🦙','🦥','🦔','🦇','🐙','🕷️','🐝','🍍','🌶️','🥑','🧀','🌭','🍽️','📰','🔮','😔','😌','😴','😪','🤤','🥴','🥺','😬','😑','😐','😶','🤐','🤫','🤭','🥱','😱','😤','😠','😡','🤬','😞','😓','😟','😥','😢','☹️','🙁','😕','😰','😨','😧','😦','😮','😯','😲','😳','🤯','😖','😩','😫','😵','🥶','🥵','🤢','🤮','🤧','🤒','🤕','😷','😈','👿','💥','🕊️','🧃','⛽','🛸','🎆','🥇','🥈','🥉','🏀','🏈','🎿','🎰','📟','💡','📚','⚠️','🌊','😉','🙃','🙂','😏','😋','😛','😝','😜','🤪','🤔','🤗','🤨','🧐','😒','🙄','😣','😂','🤣','😭','😗','😙','😚','😊','☺️','😀','😃','😄','😁','😆','😅','😶‍🌫️','😮‍💨','🦂','🐌','🪤','🌧️','🫠','🥹','🫥','🫡','🫢','🫣','🫤','🍄','🪵','🪨','🐯','🐶','🐺','🐻','🦊','🦝','🐐','🦉','🐧','🐟','🍓','🍒','🍉','🍊','🍌','🍋','🍞','🌇','🏆','⚽','🎧','👍','🐔','🪿','🦈','🐳','🐮','🐸','🧊','🪂','👾','🖼️'
     ];
 
-    /* Компонент сжатого меню для выбора */
+    /* Компонент с меню, которое открывается ВВЕРХ */
     const EmojiSelector = ({ value, onChange, options }) => {
       const [isOpen, setIsOpen] = useState(false);
       const menuRef = useRef(null);
@@ -249,7 +264,7 @@
             <div>
               <img
                 src={emojiData.results[0].media_formats.png_transparent.url}
-                alt='Selected Emoji'
+                alt="Selected Emoji"
                 width={emojiData.results[0].media_formats.png_transparent.dims[0]}
                 height={emojiData.results[0].media_formats.png_transparent.dims[1]}
               />

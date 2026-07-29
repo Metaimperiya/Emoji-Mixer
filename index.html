@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoji Kitchen WIP</title>
+
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Стили SCSS / CSS -->
+  <style type="text/css">
+    @import url("https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@800&display=swap");
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: "Wix Madefor Display", sans-serif;
+      background: linear-gradient(
+        100deg,
+        color(display-p3 0.1137 0.5686 0.9882) 13.57%,
+        color(display-p3 0.3529 0.2118 0.7529) 98.38%
+      );
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #root {
+      padding: 0 1rem;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      text-shadow: 2px 4px 3px rgba(0, 0, 0, 0.3);
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      margin-bottom: 1rem;
+    }
+
+    .select-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    /* КАСТОМНЫЙ ВЫПАДАЮЩИЙ СПИСОК */
+    .custom-select {
+      position: relative;
+      flex-grow: 1;
+      width: 100%;
+    }
+
+    .select-trigger {
+      font-size: clamp(2rem, 6vw, 3rem);
+      text-align: center;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.25);
+      padding: .25rem;
+      cursor: pointer;
+      user-select: none;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.2s;
+    }
+
+    .select-trigger:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ОКНО МЕНЮ С ОГРАНИЧЕНИЕМ В 10 СМАЙЛОВ И СКРОЛЛОМ */
+    .dropdown-menu {
+      position: absolute;
+      top: 110%;
+      left: 0;
+      right: 0;
+      /* Высота ровно под ~10 смайликов (каждая строка примерно 45px) */
+      max-height: 250px; 
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      padding: 6px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* Красивый скроллбар для меню */
+    .dropdown-menu::-webkit-scrollbar {
+      width: 6px;
+    }
+    .dropdown-menu::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .dropdown-option {
+      font-size: 2.2rem;
+      text-align: center;
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .dropdown-option:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .dropdown-option.selected {
+      background: rgba(90, 60, 200, 0.15);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+      border-radius: 8px;
+      outline: 1px solid white;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        align-items: flex-start;
+        padding-top: 2rem;
+      }
+
+      .select-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const $root = document.getElementById('root');
+    const { useState, useEffect, useRef } = React;
+
+    const emojis = [
+      '❤️','🌛','🌜','🔥','💯','💫','⭐','🌟','🕳️','🧡','💛','💚','💙','💜','🤎','🖤','🤍','💘','💝','💖','💗','💓','💞','💕','💌','♥️','❣️','💔','💋','👁️','💐','🌹','🌷','🌼','🌈','🎂','🧁','🎊','🎈','👑','💎','☕','🩷','😘','🥰','😍','🤩','🥳','🤠','🤓','😎','🤡','❤️‍🩹','🫦','🌸','🦄','🐩','🐦','🍬','🎁','🪄','🩶','🩵','🌞','🥲','🤥','😇','🤑','🥸','👻','🎃','💩','🤖','👽','🙈','🦠','💀','🌵','🌲','⛄','🌪️','☁️','🌍','🐵','🦁','🐱','🐨','🐼','🐭','🐰','🐷','🐢','🦌','🦙','🦥','🦔','🦇','🐙','🕷️','🐝','🍍','🌶️','🥑','🧀','🌭','🍽️','📰','🔮','😔','😌','😴','😪','🤤','🥴','🥺','😬','😑','😐','😶','🤐','🤫','🤭','🥱','😱','😤','😠','😡','🤬','😞','😓','😟','😥','😢','☹️','🙁','😕','😰','😨','😧','😦','😮','😯','😲','😳','🤯','😖','😩','😫','😵','🥶','🥵','🤢','🤮','🤧','🤒','🤕','😷','😈','👿','💥','🕊️','🧃','⛽','🛸','🎆','🥇','🥈','🥉','🏀','🏈','🎿','🎰','📟','💡','📚','⚠️','🌊','😉','🙃','🙂','😏','😋','😛','😝','😜','🤪','🤔','🤗','🤨','🧐','😒','🙄','😣','😂','🤣','😭','😗','😙','😚','😊','☺️','😀','😃','😄','😁','😆','😅','😶‍🌫️','😮‍💨','🦂','🐌','🪤','🌧️','🫠','🥹','🫥','🫡','🫢','🫣','🫤','🍄','🪵','🪨','🐯','🐶','🐺','🐻','🦊','🦝','🐐','🦉','🐧','🐟','🍓','🍒','🍉','🍊','🍌','🍋','🍞','🌇','🏆','⚽','🎧','👍','🐔','🪿','🦈','🐳','🐮','🐸','🧊','🪂','👾','🖼️'
+    ];
+
+    /* Компонент сжатого меню для выбора */
+    const EmojiSelector = ({ value, onChange, options }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      const menuRef = useRef(null);
+
+      // Закрытие меню при клике вне его
+      useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (menuRef.current && !menuRef.current.contains(event.target)) {
+            setIsOpen(false);
+          }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+      }, []);
+
+      const handleSelect = (emoji) => {
+        onChange(emoji);
+        setIsOpen(false);
+      };
+
+      return (
+        <div class="custom-select" ref={menuRef}>
+          <div class="select-trigger" onClick={() => setIsOpen(!isOpen)}>
+            {value}
+          </div>
+
+          {isOpen && (
+            <div class="dropdown-menu">
+              {options.map((emoji) => (
+                <div
+                  key={emoji}
+                  class={`dropdown-option ${emoji === value ? 'selected' : ''}`}
+                  onClick={() => handleSelect(emoji)}
+                >
+                  {emoji}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [selectedEmoji1, setSelectedEmoji1] = useState('🌹');
+      const [selectedEmoji2, setSelectedEmoji2] = useState('😁');
+      const [emojiData, setEmojiData] = useState(null);
+
+      useEffect(() => {
+        const fetchData = async () => {
+          try {
+            const encodedEmoji1 = encodeURIComponent(selectedEmoji1);
+            const encodedEmoji2 = encodeURIComponent(selectedEmoji2);
+
+            const response = await fetch(
+              `https://tenor.googleapis.com/v2/featured?key=AIzaSyACvEq5cnT7AcHpDdj64SE3TJZRhW-iHuo&client_key=emoji_kitchen_funbox&q=${encodedEmoji1}_${encodedEmoji2}&collection=emoji_kitchen_v6`
+            );
+
+            if (!response.ok) {
+              throw new Error('Error fetching emoji data');
+            }
+
+            const data = await response.json();
+            setEmojiData(data);
+          } catch (error) {
+            console.error(error.message);
+          }
+        };
+
+        fetchData();
+      }, [selectedEmoji1, selectedEmoji2]);
+
+      return (
+        <>
+          <h1>Emoji Kitchen WIP</h1>
+
+          {emojiData?.results?.length > 0 && (
+            <div>
+              <img
+                src={emojiData.results[0].media_formats.png_transparent.url}
+                alt='Selected Emoji'
+                width={emojiData.results[0].media_formats.png_transparent.dims[0]}
+                height={emojiData.results[0].media_formats.png_transparent.dims[1]}
+              />
+            </div>
+          )}
+
+          <div class="select-container">
+            <EmojiSelector
+              value={selectedEmoji1}
+              onChange={(val) => setSelectedEmoji1(val)}
+              options={emojis}
+            />
+
+            <EmojiSelector
+              value={selectedEmoji2}
+              onChange={(val) => setSelectedEmoji2(val)}
+              options={emojis}
+            />
+          </div>
+        </>
+      );
+    };
+
+    const root = ReactDOM.createRoot($root);
+    root.render(<App />);
+  </script>
+</body>
+</html>
